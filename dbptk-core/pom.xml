@@ -96,10 +96,10 @@
             <groupId>com.databasepreservation</groupId>
             <artifactId>dbptk-bindings-siarddk</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.databasepreservation.visualization</groupId>
-            <artifactId>dbvtk-model</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.databasepreservation.visualization</groupId>-->
+            <!--<artifactId>dbvtk-model</artifactId>-->
+        <!--</dependency>-->
 
         <!-- modules (with sources) -->
         <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-jdbc</artifactId></dependency>
@@ -108,26 +108,26 @@
         <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-list-tables</artifactId></dependency>
         <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-list-tables</artifactId><classifier>sources</classifier></dependency>
 
-        <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-ms-access</artifactId></dependency>
-        <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-ms-access</artifactId><classifier>sources</classifier></dependency>
+        <!--<dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-ms-access</artifactId></dependency>-->
+        <!--<dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-ms-access</artifactId><classifier>sources</classifier></dependency>-->
 
-        <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-mysql</artifactId></dependency>
-        <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-mysql</artifactId><classifier>sources</classifier></dependency>
+        <!--<dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-mysql</artifactId></dependency>-->
+        <!--<dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-mysql</artifactId><classifier>sources</classifier></dependency>-->
 
         <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-oracle</artifactId></dependency>
         <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-oracle</artifactId><classifier>sources</classifier></dependency>
 
-        <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-postgresql</artifactId></dependency>
-        <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-postgresql</artifactId><classifier>sources</classifier></dependency>
+        <!--<dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-postgresql</artifactId></dependency>-->
+        <!--<dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-postgresql</artifactId><classifier>sources</classifier></dependency>-->
 
         <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-siard</artifactId></dependency>
         <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-siard</artifactId><classifier>sources</classifier></dependency>
 
-        <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-solr</artifactId></dependency>
-        <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-solr</artifactId><classifier>sources</classifier></dependency>
+        <!--<dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-solr</artifactId></dependency>-->
+        <!--<dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-solr</artifactId><classifier>sources</classifier></dependency>-->
 
-        <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-sql-server</artifactId></dependency>
-        <dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-sql-server</artifactId><classifier>sources</classifier></dependency>
+        <!--<dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-sql-server</artifactId></dependency>-->
+        <!--<dependency><groupId>com.databasepreservation</groupId><artifactId>dbptk-module-sql-server</artifactId><classifier>sources</classifier></dependency>-->
 
         <!-- plugin modules handling -->
         <dependency>

@@ -18,7 +18,7 @@
         <url>http://www.keep.pt</url>
     </organization>
     <properties>
-        <version.java>1.7</version.java>
+        <version.java>1.8</version.java>
         <projectLocalRepository>${project.basedir}/vendor-libs/repository</projectLocalRepository>
         <version.dbvtk>0.2.6</version.dbvtk>
     </properties>
@@ -257,7 +257,7 @@
             <dependency>
                 <groupId>jspf.core</groupId>
                 <artifactId>jspf.core</artifactId>
-                <version>1.0.2</version>
+                <version>1.0.3</version>
             </dependency>
 
             <!-- common -->

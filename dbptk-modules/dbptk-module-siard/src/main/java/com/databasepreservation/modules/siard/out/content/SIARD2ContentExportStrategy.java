@@ -83,7 +83,7 @@ public class SIARD2ContentExportStrategy implements ContentExportStrategy {
   @Override
   public void openTable(TableStructure table) throws ModuleException {
     currentStream = writeStrategy.createOutputStream(baseContainer,
-      contentPathStrategy.getTableXmlFilePath(currentSchema.getIndex(), table.getIndex()));
+      contentPathStrategy.getTableXmlFilePath(currentSchema, table));
     currentWriter = new XMLBufferedWriter(currentStream, prettyXMLOutput);
     currentTable = table;
     currentRowIndex = 0;
@@ -271,8 +271,8 @@ public class SIARD2ContentExportStrategy implements ContentExportStrategy {
     if (cell instanceof BinaryCell) {
       final BinaryCell binCell = (BinaryCell) cell;
 
-      lob = new LargeObject(binCell, contentPathStrategy.getBlobFilePath(currentSchema.getIndex(),
-        currentTable.getIndex(), columnIndex, currentRowIndex + 1));
+      lob = new LargeObject(binCell, contentPathStrategy.getBlobFilePath(currentSchema,
+        currentTable, columnIndex, currentRowIndex + 1));
 
       currentWriter.beginOpenTag("c" + columnIndex, 2).space().append("file=\"")
         .append(contentPathStrategy.getBlobFileName(currentRowIndex + 1)).append('"').space().append("length=\"")
@@ -292,7 +292,7 @@ public class SIARD2ContentExportStrategy implements ContentExportStrategy {
 
       ByteArrayInputStream inputStream = new ByteArrayInputStream(data.getBytes());
       lob = new LargeObject(new TemporaryPathInputStreamProvider(inputStream), contentPathStrategy.getClobFilePath(
-        currentSchema.getIndex(), currentTable.getIndex(), columnIndex, currentRowIndex + 1));
+        currentSchema, currentTable, columnIndex, currentRowIndex + 1));
 
       currentWriter.beginOpenTag("c" + columnIndex, 2).space().append("file=\"")
         .append(contentPathStrategy.getClobFileName(currentRowIndex + 1)).append('"').space().append("length=\"")
@@ -320,13 +320,13 @@ public class SIARD2ContentExportStrategy implements ContentExportStrategy {
 
       .appendAttribute(
         "xsi:schemaLocation",
-        contentPathStrategy.getTableXsdNamespace("http://www.admin.ch/xmlns/siard/2.0/", currentSchema.getIndex(),
-          currentTable.getIndex()) + " " + contentPathStrategy.getTableXsdFileName(currentTable.getIndex()))
+        contentPathStrategy.getTableXsdNamespace("http://www.admin.ch/xmlns/siard/2.0/", currentSchema,
+          currentTable) + " " + contentPathStrategy.getTableXsdFileName(currentTable))
 
       .appendAttribute(
         "xmlns",
-        contentPathStrategy.getTableXsdNamespace("http://www.admin.ch/xmlns/siard/2.0/", currentSchema.getIndex(),
-          currentTable.getIndex()))
+        contentPathStrategy.getTableXsdNamespace("http://www.admin.ch/xmlns/siard/2.0/", currentSchema,
+          currentTable))
 
       .appendAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
 
@@ -358,7 +358,7 @@ public class SIARD2ContentExportStrategy implements ContentExportStrategy {
 
   private void writeXsd() throws IOException, ModuleException {
     OutputStream xsdStream = writeStrategy.createOutputStream(baseContainer,
-      contentPathStrategy.getTableXsdFilePath(currentSchema.getIndex(), currentTable.getIndex()));
+      contentPathStrategy.getTableXsdFilePath(currentSchema, currentTable));
     XMLBufferedWriter xsdWriter = new XMLBufferedWriter(xsdStream, prettyXMLOutput);
 
     xsdWriter
@@ -374,8 +374,8 @@ public class SIARD2ContentExportStrategy implements ContentExportStrategy {
 
       .appendAttribute(
         "xmlns",
-        contentPathStrategy.getTableXsdNamespace("http://www.admin.ch/xmlns/siard/2.0/", currentSchema.getIndex(),
-          currentTable.getIndex()))
+        contentPathStrategy.getTableXsdNamespace("http://www.admin.ch/xmlns/siard/2.0/", currentSchema,
+          currentTable))
 
       .appendAttribute("attributeFormDefault", "unqualified")
 
@@ -383,8 +383,8 @@ public class SIARD2ContentExportStrategy implements ContentExportStrategy {
 
       .appendAttribute(
         "targetNamespace",
-        contentPathStrategy.getTableXsdNamespace("http://www.admin.ch/xmlns/siard/2.0/", currentSchema.getIndex(),
-          currentTable.getIndex()))
+        contentPathStrategy.getTableXsdNamespace("http://www.admin.ch/xmlns/siard/2.0/", currentSchema,
+          currentTable))
 
       .endOpenTag()
 

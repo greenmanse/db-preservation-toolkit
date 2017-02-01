@@ -384,7 +384,7 @@ public class SIARD1MetadataExportStrategy implements MetadataExportStrategy {
 
     if (StringUtils.isNotBlank(schema.getName())) {
       schemaType.setName(schema.getName());
-      schemaType.setFolder(contentPathStrategy.getSchemaFolderName(schema.getIndex()));
+      schemaType.setFolder(contentPathStrategy.getSchemaFolderName(schema));
     } else {
       throw new ModuleException("Error while exporting schema structure: schema name cannot be blank");
     }
@@ -612,7 +612,7 @@ public class SIARD1MetadataExportStrategy implements MetadataExportStrategy {
 
     if (StringUtils.isNotBlank(table.getName())) {
       tableType.setName(table.getName());
-      tableType.setFolder(contentPathStrategy.getTableFolderName(table.getIndex()));
+      tableType.setFolder(contentPathStrategy.getTableFolderName(table));
     } else {
       throw new ModuleException("Error while exporting table structure: table name cannot be blank");
     }

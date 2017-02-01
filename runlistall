@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for SCHEMA in FHUS_AQ FHUS_CP FHUS_CT FHUS_TSS FH_CMIS_PTDB; do
+  echo "=== Dumping schema ${SCHEMA} ==="
+  echo
+  ./runlist ${SCHEMA}
+done

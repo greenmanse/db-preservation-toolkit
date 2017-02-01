@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for SCHEMA in FHUS_AQ FHUS_CP FHUS_CT FHUS_TSS FH_CMIS_PTDB; do
+  rm -rf ${SCHEMA}.siard2
+  mkdir ${SCHEMA}.siard2
+  (cd ${SCHEMA}.siard2; unzip ../${SCHEMA}.siard2.zip)
+done

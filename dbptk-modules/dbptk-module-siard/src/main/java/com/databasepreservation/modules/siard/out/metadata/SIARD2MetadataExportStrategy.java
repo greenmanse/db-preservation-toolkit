@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -14,41 +13,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
-import com.databasepreservation.model.exception.ModuleException;
-import com.databasepreservation.model.exception.UnknownTypeException;
-import com.databasepreservation.model.structure.CandidateKey;
-import com.databasepreservation.model.structure.CheckConstraint;
-import com.databasepreservation.model.structure.ColumnStructure;
-import com.databasepreservation.model.structure.DatabaseStructure;
-import com.databasepreservation.model.structure.ForeignKey;
-import com.databasepreservation.model.structure.Parameter;
-import com.databasepreservation.model.structure.PrimaryKey;
-import com.databasepreservation.model.structure.PrivilegeStructure;
-import com.databasepreservation.model.structure.Reference;
-import com.databasepreservation.model.structure.RoleStructure;
-import com.databasepreservation.model.structure.RoutineStructure;
-import com.databasepreservation.model.structure.SchemaStructure;
-import com.databasepreservation.model.structure.TableStructure;
-import com.databasepreservation.model.structure.Trigger;
-import com.databasepreservation.model.structure.UserStructure;
-import com.databasepreservation.model.structure.ViewStructure;
-import com.databasepreservation.model.structure.type.ComposedTypeStructure;
-import com.databasepreservation.model.structure.type.Type;
-import com.databasepreservation.modules.siard.SIARDHelper;
-import com.databasepreservation.modules.siard.common.SIARDArchiveContainer;
-import com.databasepreservation.modules.siard.common.path.MetadataPathStrategy;
-import com.databasepreservation.modules.siard.out.content.Sql2008toXSDType;
-import com.databasepreservation.modules.siard.out.path.SIARD2ContentPathExportStrategy;
-import com.databasepreservation.modules.siard.out.write.WriteStrategy;
-import com.databasepreservation.utils.JodaUtils;
-import com.databasepreservation.utils.XMLUtils;
 
 import ch.admin.bar.xmlns.siard._2_0.metadata.ActionTimeType;
 import ch.admin.bar.xmlns.siard._2_0.metadata.AttributeType;
@@ -87,6 +51,39 @@ import ch.admin.bar.xmlns.siard._2_0.metadata.UserType;
 import ch.admin.bar.xmlns.siard._2_0.metadata.UsersType;
 import ch.admin.bar.xmlns.siard._2_0.metadata.ViewType;
 import ch.admin.bar.xmlns.siard._2_0.metadata.ViewsType;
+import com.databasepreservation.model.exception.ModuleException;
+import com.databasepreservation.model.exception.UnknownTypeException;
+import com.databasepreservation.model.structure.CandidateKey;
+import com.databasepreservation.model.structure.CheckConstraint;
+import com.databasepreservation.model.structure.ColumnStructure;
+import com.databasepreservation.model.structure.DatabaseStructure;
+import com.databasepreservation.model.structure.ForeignKey;
+import com.databasepreservation.model.structure.Parameter;
+import com.databasepreservation.model.structure.PrimaryKey;
+import com.databasepreservation.model.structure.PrivilegeStructure;
+import com.databasepreservation.model.structure.Reference;
+import com.databasepreservation.model.structure.RoleStructure;
+import com.databasepreservation.model.structure.RoutineStructure;
+import com.databasepreservation.model.structure.SchemaStructure;
+import com.databasepreservation.model.structure.TableStructure;
+import com.databasepreservation.model.structure.Trigger;
+import com.databasepreservation.model.structure.UserStructure;
+import com.databasepreservation.model.structure.ViewStructure;
+import com.databasepreservation.model.structure.type.ComposedTypeStructure;
+import com.databasepreservation.model.structure.type.Type;
+import com.databasepreservation.modules.siard.SIARDHelper;
+import com.databasepreservation.modules.siard.common.SIARDArchiveContainer;
+import com.databasepreservation.modules.siard.common.path.MetadataPathStrategy;
+import com.databasepreservation.modules.siard.out.content.Sql2008toXSDType;
+import com.databasepreservation.modules.siard.out.path.ContentPathExportStrategy;
+import com.databasepreservation.modules.siard.out.write.WriteStrategy;
+import com.databasepreservation.utils.JodaUtils;
+import com.databasepreservation.utils.XMLUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * @author Bruno Ferreira <bferreira@keep.pt>
@@ -96,11 +93,11 @@ public class SIARD2MetadataExportStrategy implements MetadataExportStrategy {
   private static final String METADATA_FILENAME = "metadata";
   private static final String METADATA_RESOURCE_FILENAME = "siard2-metadata";
   private static final Logger LOGGER = LoggerFactory.getLogger(SIARD2MetadataExportStrategy.class);
-  private final SIARD2ContentPathExportStrategy contentPathStrategy;
+  private final ContentPathExportStrategy contentPathStrategy;
   private final MetadataPathStrategy metadataPathStrategy;
   private final boolean savingLobsExternally;
 
-  public SIARD2MetadataExportStrategy(MetadataPathStrategy metadataPathStrategy, SIARD2ContentPathExportStrategy paths,
+  public SIARD2MetadataExportStrategy(MetadataPathStrategy metadataPathStrategy, ContentPathExportStrategy paths,
     boolean savingLobsExternally) {
     this.contentPathStrategy = paths;
     this.metadataPathStrategy = metadataPathStrategy;
@@ -408,7 +405,7 @@ public class SIARD2MetadataExportStrategy implements MetadataExportStrategy {
 
     if (StringUtils.isNotBlank(schema.getName())) {
       schemaType.setName(schema.getName());
-      schemaType.setFolder(contentPathStrategy.getSchemaFolderName(schema.getIndex()));
+      schemaType.setFolder(contentPathStrategy.getSchemaFolderName(schema));
     } else {
       throw new ModuleException("Error while exporting schema structure: schema name cannot be blank");
     }
@@ -725,7 +722,7 @@ public class SIARD2MetadataExportStrategy implements MetadataExportStrategy {
 
     if (StringUtils.isNotBlank(table.getName())) {
       tableType.setName(table.getName());
-      tableType.setFolder(contentPathStrategy.getTableFolderName(table.getIndex()));
+      tableType.setFolder(contentPathStrategy.getTableFolderName(table));
     } else {
       throw new ModuleException("Error while exporting table structure: table name cannot be blank");
     }

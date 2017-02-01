@@ -1,0 +1,43 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+  echo "Usage: script <schema>"
+  exit -1
+fi
+
+SCHEMA=$1
+
+java -jar ./dbptk-core/target/dbptk-app-2.0.0-beta7.1.jar \
+--import oracle \
+--import-server-name=ftsnapshot-db01.a.fsglobal.net \
+--import-database=f505 \
+--import-username=greenmanse \
+--import-password=Changeme1 \
+--import-port-number=1521 \
+--import-accept-license \
+--import-source-schema=${SCHEMA} \
+--export siard-2 \
+--export-file=${SCHEMA}.siard2.zip \
+--export-pretty-xml \
+--export-descriptive-dir-names \
+--export-table-filter=${SCHEMA}.tables.txt \
+
+
+#Export module: siard-2
+#    -ef, --export-file=value    (required) Path to SIARD2 archive file
+#    -ec, --export-compress    (optional) use to compress the SIARD2 archive file with deflate method
+#    -ep, --export-pretty-xml    (optional) write human-readable XML
+#    -etf, --export-table-filter=value    (optional) file with the list of tables that should be exported (this file can be created by the list-tables export module).
+#    -eel, --export-external-lobs    (optional) Saves any LOBs outside the siard file.
+#    -eelpf, --export-external-lobs-per-folder=value    (optional) The maximum number of files present in an external LOB folder. Default: 1000 files.
+#    -eelfs, --export-external-lobs-folder-size=value    (optional) Divide LOBs across multiple external folders with (approximately) the specified maximum size (in Megabytes). Default: do not divide.
+#    -emd, --export-meta-description[=value]    (optional) SIARD descriptive metadata field: Description of database meaning and content as a whole.
+#    -ema, --export-meta-archiver[=value]    (optional) SIARD descriptive metadata field: Name of the person who carried out the archiving of the database.
+#    -emac, --export-meta-archiver-contact[=value]    (optional) SIARD descriptive metadata field: Contact details (telephone, email) of the person who carried out the archiving of the database.
+#    -emdo, --export-meta-data-owner[=value]    (optional) SIARD descriptive metadata field: Owner of the data in the database. The person or institution that, at the time of archiving, has the right to grant usage rights for the data and is responsible for compliance with legal obligations such as data protection guidelines.
+#    -emdot, --export-meta-data-origin-timespan[=value]    (optional) SIARD descriptive metadata field: Origination period of the data in the database (approximate indication in text form).
+#    -emcm, --export-meta-client-machine[=value]    (optional) SIARD descriptive metadata field: DNS name of the (client) computer on which the archiving was carried out.
+
+
+#--expor list-tables \
+#--export-file=tables.out

@@ -110,12 +110,12 @@ public class SIARD2ContentWithExternalLobsExportStrategy extends SIARD2ContentEx
     if (cell instanceof BinaryCell) {
       final BinaryCell binCell = (BinaryCell) cell;
       lobSizeParameter = binCell.getSize();
-      lobFileParameter = contentPathStrategy.getBlobFilePath(currentSchema.getIndex(), currentTable.getIndex(),
+      lobFileParameter = contentPathStrategy.getBlobFilePath(currentSchema, currentTable,
         columnIndex, currentRowIndex + 1);
     } else if (cell instanceof SimpleCell) {
       SimpleCell txtCell = (SimpleCell) cell;
       lobSizeParameter = txtCell.getBytesSize();
-      lobFileParameter = contentPathStrategy.getClobFilePath(currentSchema.getIndex(), currentTable.getIndex(),
+      lobFileParameter = contentPathStrategy.getClobFilePath(currentSchema, currentTable,
         columnIndex, currentRowIndex + 1);
     }
 

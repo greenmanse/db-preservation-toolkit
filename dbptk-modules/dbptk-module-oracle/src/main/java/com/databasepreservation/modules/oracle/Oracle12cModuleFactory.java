@@ -86,7 +86,7 @@ public class Oracle12cModuleFactory implements DatabaseModuleFactory {
 
   @Override
   public Parameters getImportModuleParameters() throws OperationNotSupportedException {
-    return new Parameters(Arrays.asList(serverName, database, username, password, portNumber, acceptLicense), null);
+    return new Parameters(Arrays.asList(serverName, database, username, password, portNumber, acceptLicense, sourceSchema), null);
   }
 
   @Override
@@ -102,6 +102,7 @@ public class Oracle12cModuleFactory implements DatabaseModuleFactory {
     String pDatabase = parameters.get(database);
     String pUsername = parameters.get(username);
     String pPassword = parameters.get(password);
+    String schema = parameters.get(sourceSchema);
 
     boolean pAcceptLicense = Boolean.parseBoolean(parameters.get(acceptLicense));
 
@@ -113,7 +114,7 @@ public class Oracle12cModuleFactory implements DatabaseModuleFactory {
 
     Reporter.importModuleParameters(getModuleName(), "server name", pServerName, "database", pDatabase, "username",
       pUsername, "password", Reporter.MESSAGE_FILTERED, "port number", pPortNumber.toString());
-    return new Oracle12cJDBCImportModule(pServerName, pPortNumber, pDatabase, pUsername, pPassword);
+    return new Oracle12cJDBCImportModule(pServerName, pPortNumber, pDatabase, pUsername, pPassword, schema);
   }
 
   @Override

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+  echo "Usage: script <schema>"
+  exit -1
+fi
+
+SCHEMA=$1
+
+java -jar ./dbptk-core/target/dbptk-app-2.0.0-beta7.1.jar \
+--import oracle \
+--import-server-name=ftsnapshot-db01.a.fsglobal.net \
+--import-database=f505 \
+--import-username=greenmanse \
+--import-password=Changeme1 \
+--import-port-number=1521 \
+--import-accept-license \
+--import-source-schema=${SCHEMA} \
+--export list-tables \
+--export-file=${SCHEMA}.tables.txt

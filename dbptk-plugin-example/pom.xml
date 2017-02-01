@@ -8,7 +8,7 @@
     <version>2.0.0-rc3.1.0</version>
     <packaging>jar</packaging>
     <properties>
-        <version.java>1.7</version.java>
+        <version.java>1.8</version.java>
     </properties>
     <repositories>
         <repository>

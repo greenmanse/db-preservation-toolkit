@@ -513,7 +513,7 @@ public class JDBCImportModule implements DatabaseImportModule {
     table.setCheckConstraints(getCheckConstraints(schema.getName(), tableName));
     table.setTriggers(getTriggers(schema.getName(), tableName));
 
-    table.setRows(getRows(schema.getName(), tableName));
+//    table.setRows(getRows(schema.getName(), tableName));
 
     return table;
   }
@@ -1593,7 +1593,8 @@ public class JDBCImportModule implements DatabaseImportModule {
           long nRows = 0;
           long tableRows = table.getRows();
           long lastProgressTimestamp = System.currentTimeMillis();
-          if (moduleSettings.shouldFetchRows()) {
+//          if (moduleSettings.shouldFetchRows()) {
+          if (false) {
             ResultSet tableRawData = null;
 
             try {

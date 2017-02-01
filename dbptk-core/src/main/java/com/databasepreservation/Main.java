@@ -4,10 +4,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.cli.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.databasepreservation.cli.CLI;
 import com.databasepreservation.model.Reporter;
 import com.databasepreservation.model.exception.InvalidDataException;
@@ -19,16 +15,14 @@ import com.databasepreservation.model.modules.DatabaseImportModule;
 import com.databasepreservation.model.modules.DatabaseModuleFactory;
 import com.databasepreservation.modules.jdbc.JDBCModuleFactory;
 import com.databasepreservation.modules.listTables.ListTablesModuleFactory;
-import com.databasepreservation.modules.msAccess.MsAccessUCanAccessModuleFactory;
-import com.databasepreservation.modules.mySql.MySQLModuleFactory;
 import com.databasepreservation.modules.oracle.Oracle12cModuleFactory;
-import com.databasepreservation.modules.postgreSql.PostgreSQLModuleFactory;
 import com.databasepreservation.modules.siard.SIARD1ModuleFactory;
 import com.databasepreservation.modules.siard.SIARD2ModuleFactory;
 import com.databasepreservation.modules.siard.SIARDDKModuleFactory;
-import com.databasepreservation.modules.solr.SolrModuleFactory;
-import com.databasepreservation.modules.sqlServer.SQLServerJDBCModuleFactory;
 import com.databasepreservation.utils.MiscUtils;
+import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Luis Faria <lfaria@keep.pt>
@@ -47,9 +41,8 @@ public class Main {
   private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
   private static final DatabaseModuleFactory[] databaseModuleFactories = new DatabaseModuleFactory[] {
-    new JDBCModuleFactory(), new ListTablesModuleFactory(), new MsAccessUCanAccessModuleFactory(),
-    new MySQLModuleFactory(), new Oracle12cModuleFactory(), new PostgreSQLModuleFactory(), new SIARD1ModuleFactory(),
-    new SIARD2ModuleFactory(), new SIARDDKModuleFactory(), new SolrModuleFactory(), new SQLServerJDBCModuleFactory()};
+    new JDBCModuleFactory(), new ListTablesModuleFactory(), new Oracle12cModuleFactory(), new SIARD1ModuleFactory(),
+    new SIARD2ModuleFactory(), new SIARDDKModuleFactory()};
 
   /**
    * @param args

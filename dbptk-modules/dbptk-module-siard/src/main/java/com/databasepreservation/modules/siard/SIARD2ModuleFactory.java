@@ -6,10 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.naming.OperationNotSupportedException;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.databasepreservation.model.Reporter;
 import com.databasepreservation.model.modules.DatabaseExportModule;
@@ -19,13 +16,16 @@ import com.databasepreservation.model.parameters.Parameter;
 import com.databasepreservation.model.parameters.Parameters;
 import com.databasepreservation.modules.siard.in.input.SIARD2ImportModule;
 import com.databasepreservation.modules.siard.out.output.SIARD2ExportModule;
+import com.databasepreservation.modules.siard.out.path.SIARD2ContentWithExternalLobsPathExportStrategy;
+import com.databasepreservation.modules.siard.out.path.SIARD2DescriptiveContentPathExportStrategy;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Bruno Ferreira <bferreira@keep.pt>
  */
 public class SIARD2ModuleFactory implements DatabaseModuleFactory {
   private static final Parameter file = new Parameter().shortName("f").longName("file")
-    .description("Path to SIARD2 archive file").hasArgument(true).setOptionalArgument(false).required(true);
+      .description("Path to SIARD2 archive file").hasArgument(true).setOptionalArgument(false).required(true);
 
   // TODO: check if this argument is really necessary
   // private static final Parameter auxiliaryContainersInZipFormat = new
@@ -36,72 +36,76 @@ public class SIARD2ModuleFactory implements DatabaseModuleFactory {
   // .valueIfNotSet("false").valueIfSet("true");
 
   private static final Parameter compress = new Parameter().shortName("c").longName("compress")
-    .description("use to compress the SIARD2 archive file with deflate method").hasArgument(false).required(false)
-    .valueIfNotSet("false").valueIfSet("true");
+      .description("use to compress the SIARD2 archive file with deflate method").hasArgument(false).required(false)
+      .valueIfNotSet("false").valueIfSet("true");
 
   private static final Parameter prettyPrintXML = new Parameter().shortName("p").longName("pretty-xml")
-    .description("write human-readable XML").hasArgument(false).required(false).valueIfNotSet("false")
-    .valueIfSet("true");
+      .description("write human-readable XML").hasArgument(false).required(false).valueIfNotSet("false")
+      .valueIfSet("true");
+
+  private static final Parameter useDescriptiveDirNames = new Parameter().shortName("d").longName("descriptive-dir-names")
+      .description("Use descriptive directory names for schemas and tables").hasArgument(false).required(false).valueIfNotSet("false")
+      .valueIfSet("true");
 
   private static final Parameter tableFilter = new Parameter()
-    .shortName("tf")
-    .longName("table-filter")
-    .description(
-      "file with the list of tables that should be exported (this file can be created by the list-tables export module).")
-    .required(false).hasArgument(true).setOptionalArgument(false);
+      .shortName("tf")
+      .longName("table-filter")
+      .description(
+          "file with the list of tables that should be exported (this file can be created by the list-tables export module).")
+      .required(false).hasArgument(true).setOptionalArgument(false);
 
   private static final Parameter externalLobs = new Parameter().shortName("el").longName("external-lobs")
-    .description("Saves any LOBs outside the siard file.").required(false).hasArgument(false).valueIfSet("true")
-    .valueIfNotSet("false");
+      .description("Saves any LOBs outside the siard file.").required(false).hasArgument(false).valueIfSet("true")
+      .valueIfNotSet("false");
 
   private static final Parameter externalLobsPerFolder = new Parameter().shortName("elpf")
-    .longName("external-lobs-per-folder")
-    .description("The maximum number of files present in an external LOB folder. Default: 1000 files.").required(false)
-    .hasArgument(true).setOptionalArgument(false).valueIfNotSet("1000");
+      .longName("external-lobs-per-folder")
+      .description("The maximum number of files present in an external LOB folder. Default: 1000 files.").required(false)
+      .hasArgument(true).setOptionalArgument(false).valueIfNotSet("1000");
 
   private static final Parameter externalLobsFolderSize = new Parameter()
-    .shortName("elfs")
-    .longName("external-lobs-folder-size")
-    .description(
-      "Divide LOBs across multiple external folders with (approximately) the specified maximum size (in Megabytes). Default: do not divide.")
-    .required(false).hasArgument(true).setOptionalArgument(false).valueIfNotSet("0");
+      .shortName("elfs")
+      .longName("external-lobs-folder-size")
+      .description(
+          "Divide LOBs across multiple external folders with (approximately) the specified maximum size (in Megabytes). Default: do not divide.")
+      .required(false).hasArgument(true).setOptionalArgument(false).valueIfNotSet("0");
 
   public static final Parameter metaDescription = new Parameter().shortName("md").longName("meta-description")
-    .description("SIARD descriptive metadata field: Description of database meaning and content as a whole.")
-    .required(false).hasArgument(true).setOptionalArgument(true).valueIfNotSet("unspecified");
+      .description("SIARD descriptive metadata field: Description of database meaning and content as a whole.")
+      .required(false).hasArgument(true).setOptionalArgument(true).valueIfNotSet("unspecified");
 
   public static final Parameter metaArchiver = new Parameter().shortName("ma").longName("meta-archiver")
-    .description("SIARD descriptive metadata field: Name of the person who carried out the archiving of the database.")
-    .required(false).hasArgument(true).setOptionalArgument(true).valueIfNotSet("unspecified");
+      .description("SIARD descriptive metadata field: Name of the person who carried out the archiving of the database.")
+      .required(false).hasArgument(true).setOptionalArgument(true).valueIfNotSet("unspecified");
 
   public static final Parameter metaArchiverContact = new Parameter()
-    .shortName("mac")
-    .longName("meta-archiver-contact")
-    .description(
-      "SIARD descriptive metadata field: Contact details (telephone, email) of the person who carried out the archiving of the database.")
-    .required(false).hasArgument(true).setOptionalArgument(true).valueIfNotSet("unspecified");
+      .shortName("mac")
+      .longName("meta-archiver-contact")
+      .description(
+          "SIARD descriptive metadata field: Contact details (telephone, email) of the person who carried out the archiving of the database.")
+      .required(false).hasArgument(true).setOptionalArgument(true).valueIfNotSet("unspecified");
 
   public static final Parameter metaDataOwner = new Parameter()
-    .shortName("mdo")
-    .longName("meta-data-owner")
-    .description(
-      "SIARD descriptive metadata field: Owner of the data in the database. The person or institution that, at the time of archiving, has the right to grant usage rights for the data and is responsible for compliance with legal obligations such as data protection guidelines.")
-    .required(false).hasArgument(true).setOptionalArgument(true).valueIfNotSet("unspecified");
+      .shortName("mdo")
+      .longName("meta-data-owner")
+      .description(
+          "SIARD descriptive metadata field: Owner of the data in the database. The person or institution that, at the time of archiving, has the right to grant usage rights for the data and is responsible for compliance with legal obligations such as data protection guidelines.")
+      .required(false).hasArgument(true).setOptionalArgument(true).valueIfNotSet("unspecified");
 
   public static final Parameter metaDataOriginTimespan = new Parameter()
-    .shortName("mdot")
-    .longName("meta-data-origin-timespan")
-    .description(
-      "SIARD descriptive metadata field: Origination period of the data in the database (approximate indication in text form).")
-    .required(false).hasArgument(true).setOptionalArgument(true).valueIfNotSet("unspecified");
+      .shortName("mdot")
+      .longName("meta-data-origin-timespan")
+      .description(
+          "SIARD descriptive metadata field: Origination period of the data in the database (approximate indication in text form).")
+      .required(false).hasArgument(true).setOptionalArgument(true).valueIfNotSet("unspecified");
 
   public static final Parameter metaClientMachine = new Parameter()
-    .shortName("mcm")
-    .longName("meta-client-machine")
-    .description(
-      "SIARD descriptive metadata field: DNS name of the (client) computer on which the archiving was carried out.")
-    .required(false).hasArgument(true).setOptionalArgument(true)
-    .valueIfNotSet(SIARDHelper.getMachineHostname() + " (fetched automatically)");
+      .shortName("mcm")
+      .longName("meta-client-machine")
+      .description(
+          "SIARD descriptive metadata field: DNS name of the (client) computer on which the archiving was carried out.")
+      .required(false).hasArgument(true).setOptionalArgument(true)
+      .valueIfNotSet(SIARDHelper.getMachineHostname() + " (fetched automatically)");
 
   @Override
   public boolean producesImportModules() {
@@ -124,6 +128,7 @@ public class SIARD2ModuleFactory implements DatabaseModuleFactory {
     parameterHashMap.put(file.longName(), file);
     parameterHashMap.put(compress.longName(), compress);
     parameterHashMap.put(prettyPrintXML.longName(), prettyPrintXML);
+    parameterHashMap.put(useDescriptiveDirNames.longName(), useDescriptiveDirNames);
     parameterHashMap.put(tableFilter.longName(), tableFilter);
     parameterHashMap.put(externalLobs.longName(), externalLobs);
     parameterHashMap.put(externalLobsPerFolder.longName(), externalLobsPerFolder);
@@ -145,14 +150,14 @@ public class SIARD2ModuleFactory implements DatabaseModuleFactory {
 
   @Override
   public Parameters getExportModuleParameters() throws OperationNotSupportedException {
-    return new Parameters(Arrays.asList(file, compress, prettyPrintXML, tableFilter, externalLobs,
-      externalLobsPerFolder, externalLobsFolderSize, metaDescription, metaArchiver, metaArchiverContact, metaDataOwner,
-      metaDataOriginTimespan, metaClientMachine), null);
+    return new Parameters(Arrays.asList(file, compress, prettyPrintXML, useDescriptiveDirNames, tableFilter, externalLobs,
+        externalLobsPerFolder, externalLobsFolderSize, metaDescription, metaArchiver, metaArchiverContact, metaDataOwner,
+        metaDataOriginTimespan, metaClientMachine), null);
   }
 
   @Override
   public DatabaseImportModule buildImportModule(Map<Parameter, String> parameters)
-    throws OperationNotSupportedException {
+      throws OperationNotSupportedException {
     Path pFile = Paths.get(parameters.get(file));
 
     Reporter.importModuleParameters(getModuleName(), "file", pFile.normalize().toAbsolutePath().toString());
@@ -161,7 +166,7 @@ public class SIARD2ModuleFactory implements DatabaseModuleFactory {
 
   @Override
   public DatabaseExportModule buildExportModule(Map<Parameter, String> parameters)
-    throws OperationNotSupportedException {
+      throws OperationNotSupportedException {
     Path pFile = Paths.get(parameters.get(file));
 
     // optional
@@ -174,6 +179,12 @@ public class SIARD2ModuleFactory implements DatabaseModuleFactory {
     boolean pPrettyPrintXML = Boolean.parseBoolean(prettyPrintXML.valueIfNotSet());
     if (StringUtils.isNotBlank(parameters.get(prettyPrintXML))) {
       pPrettyPrintXML = Boolean.parseBoolean(prettyPrintXML.valueIfSet());
+    }
+
+    // optional
+    boolean pUseDescriptiveDirNames = Boolean.parseBoolean(useDescriptiveDirNames.valueIfNotSet());
+    if (StringUtils.isNotBlank(parameters.get(useDescriptiveDirNames))) {
+      pUseDescriptiveDirNames = Boolean.parseBoolean(useDescriptiveDirNames.valueIfSet());
     }
 
     // optional
@@ -208,7 +219,7 @@ public class SIARD2ModuleFactory implements DatabaseModuleFactory {
 
     // descriptive metadata
     List<Parameter> descriptiveMetadataParameters = Arrays.asList(metaDescription, metaArchiver, metaArchiverContact,
-      metaDataOwner, metaDataOriginTimespan, metaClientMachine);
+        metaDataOwner, metaDataOriginTimespan, metaClientMachine);
     HashMap<String, String> descriptiveMetadataParameterValues = new HashMap<>(descriptiveMetadataParameters.size());
     descriptiveMetadataParameterValues.put("Description", parameters.get(metaDescription));
     if (StringUtils.isBlank(descriptiveMetadataParameterValues.get("Description"))) {
@@ -237,31 +248,54 @@ public class SIARD2ModuleFactory implements DatabaseModuleFactory {
 
     if (pExternalLobs) {
       if (pTableFilter == null) {
+        Reporter.exportModuleParameters(getModuleName(),
+            "file", pFile.normalize().toAbsolutePath().toString(),
+            "compress", String.valueOf(pCompress),
+            "pretty xml", String.valueOf(pPrettyPrintXML),
+            "descrip dir names", String.valueOf(pUseDescriptiveDirNames),
+            "external lobs per folder", String.valueOf(pExternalLobsPerFolder),
+            "external lobs folder size", String.valueOf(pExternalLobsFolderSize));
+      }
+      else {
         Reporter.exportModuleParameters(getModuleName(), "file", pFile.normalize().toAbsolutePath().toString(),
-          "compress", String.valueOf(pCompress), "pretty xml", String.valueOf(pPrettyPrintXML),
-          "external lobs per folder", String.valueOf(pExternalLobsPerFolder), "external lobs folder size",
-          String.valueOf(pExternalLobsFolderSize));
-      } else {
-        Reporter.exportModuleParameters(getModuleName(), "file", pFile.normalize().toAbsolutePath().toString(),
-          "compress", String.valueOf(pCompress), "pretty xml", String.valueOf(pPrettyPrintXML), "table filter",
-          pTableFilter.normalize().toAbsolutePath().toString(), "external lobs per folder",
-          String.valueOf(pExternalLobsPerFolder), "external lobs folder size", String.valueOf(pExternalLobsFolderSize));
+            "compress", String.valueOf(pCompress),
+            "pretty xml", String.valueOf(pPrettyPrintXML),
+            "descrip dir names", String.valueOf(pUseDescriptiveDirNames),
+            "table filter", pTableFilter.normalize().toAbsolutePath().toString(),
+            "external lobs per folder", String.valueOf(pExternalLobsPerFolder),
+            "external lobs folder size", String.valueOf(pExternalLobsFolderSize));
       }
 
-      return new SIARD2ExportModule(pFile, pCompress, pPrettyPrintXML, pTableFilter, pExternalLobsPerFolder,
-        pExternalLobsFolderSize, descriptiveMetadataParameterValues).getDatabaseHandler();
-    } else {
+      if (pUseDescriptiveDirNames) {
+        return new SIARD2ExportModule(pFile, pCompress, pPrettyPrintXML, pTableFilter, pExternalLobsPerFolder,
+            pExternalLobsFolderSize, descriptiveMetadataParameterValues, new SIARD2ContentWithExternalLobsPathExportStrategy(/* TODO support this */)
+        ).getDatabaseHandler();
+      }
+      else {
+        return new SIARD2ExportModule(pFile, pCompress, pPrettyPrintXML, pTableFilter, pExternalLobsPerFolder,
+            pExternalLobsFolderSize, descriptiveMetadataParameterValues).getDatabaseHandler();
+      }
+    }
+    else {
       if (pTableFilter == null) {
         Reporter.exportModuleParameters(getModuleName(), "file", pFile.normalize().toAbsolutePath().toString(),
-          "compress", String.valueOf(pCompress), "pretty xml", String.valueOf(pPrettyPrintXML));
-      } else {
+            "compress", String.valueOf(pCompress), "pretty xml", String.valueOf(pPrettyPrintXML));
+      }
+      else {
         Reporter.exportModuleParameters(getModuleName(), "file", pFile.normalize().toAbsolutePath().toString(),
-          "compress", String.valueOf(pCompress), "pretty xml", String.valueOf(pPrettyPrintXML), "table filter",
-          pTableFilter.normalize().toAbsolutePath().toString());
+            "compress", String.valueOf(pCompress), "pretty xml", String.valueOf(pPrettyPrintXML), "table filter",
+            pTableFilter.normalize().toAbsolutePath().toString());
       }
 
-      return new SIARD2ExportModule(pFile, pCompress, pPrettyPrintXML, pTableFilter, descriptiveMetadataParameterValues)
-        .getDatabaseHandler();
+      if (pUseDescriptiveDirNames) {
+        return new SIARD2ExportModule(pFile, pCompress, pPrettyPrintXML, pTableFilter, descriptiveMetadataParameterValues,
+            new SIARD2DescriptiveContentPathExportStrategy())
+            .getDatabaseHandler();
+      }
+      else {
+        return new SIARD2ExportModule(pFile, pCompress, pPrettyPrintXML, pTableFilter, descriptiveMetadataParameterValues)
+            .getDatabaseHandler();
+      }
     }
   }
 }

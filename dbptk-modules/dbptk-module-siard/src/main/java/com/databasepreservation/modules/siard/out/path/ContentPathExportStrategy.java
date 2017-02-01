@@ -1,5 +1,8 @@
 package com.databasepreservation.modules.siard.out.path;
 
+import com.databasepreservation.model.structure.SchemaStructure;
+import com.databasepreservation.model.structure.TableStructure;
+
 /**
  * Interface to describe paths to folders and files for some SIARD archive.
  * <p>
@@ -11,6 +14,11 @@ package com.databasepreservation.modules.siard.out.path;
  * @author Bruno Ferreira <bferreira@keep.pt>
  */
 public interface ContentPathExportStrategy {
+  //-------------------------------------------------------------------------------------------------------------------
+  default String getClobFilePath(SchemaStructure schemaStructure, TableStructure tableStructure, int columnIndex, int rowIndex) {
+    return getClobFilePath(schemaStructure.getIndex(), tableStructure.getIndex(), columnIndex, rowIndex);
+  }
+
   /**
    * Returns the path to a LOB file
    *
@@ -25,6 +33,11 @@ public interface ContentPathExportStrategy {
    */
   public String getClobFilePath(int schemaIndex, int tableIndex, int columnIndex, int rowIndex);
 
+  //-------------------------------------------------------------------------------------------------------------------
+  default String getBlobFilePath(SchemaStructure schemaStructure, TableStructure tableStructure, int columnIndex, int rowIndex) {
+    return getBlobFilePath(schemaStructure.getIndex(), tableStructure.getIndex(), columnIndex, rowIndex);
+  }
+
   /**
    * Returns the path to a LOB file
    *
@@ -38,6 +51,16 @@ public interface ContentPathExportStrategy {
    *          Row index (begins at 0)
    */
   public String getBlobFilePath(int schemaIndex, int tableIndex, int columnIndex, int rowIndex);
+
+  /**
+   * Returns the name of the database schema folder
+   *
+   * @param schema
+   *          database schema
+   */
+  default public String getSchemaFolderName(SchemaStructure schema) {
+    return getSchemaFolderName(schema.getIndex());
+  };
 
   /**
    * Returns the name of the database schema folder
@@ -58,10 +81,25 @@ public interface ContentPathExportStrategy {
   /**
    * Returns the name of a table's folder
    *
+   * */
+  default public String getTableFolderName(TableStructure table) {
+    return getTableFolderName(table.getIndex());
+  }
+
+  /**
+   * Returns the name of a table's folder
+   *
    * @param tableIndex
-   *          table index (begins at 1)
    */
   public String getTableFolderName(int tableIndex);
+
+  /**
+   * Returns the path to a table's XML file
+   *
+   */
+  default public String getTableXsdFilePath(SchemaStructure schema, TableStructure table) {
+    return getTableXsdFilePath(schema.getIndex(), table.getIndex());
+  }
 
   /**
    * Returns the path to a table's XML file
@@ -76,12 +114,25 @@ public interface ContentPathExportStrategy {
   /**
    * Returns the path to a table's XSD file
    *
+   */
+  default public String getTableXmlFilePath(SchemaStructure schema, TableStructure table) {
+    return getTableXmlFilePath(schema.getIndex(), table.getIndex());
+  }
+
+  /**
+   * Returns the path to a table's XSD file
+   *
    * @param schemaIndex
    *          database schema index (begins at 1)
    * @param tableIndex
    *          table index (begins at 1)
    */
   public String getTableXmlFilePath(int schemaIndex, int tableIndex);
+
+  //-------------------------------------------------------------------------------------------------------------------
+  default String getTableXsdNamespace(String base, SchemaStructure schemaStructure, TableStructure tableStructure) {
+    return getTableXsdNamespace(base, schemaStructure.getIndex(), tableStructure.getIndex());
+  }
 
   /**
    * Returns the XML schema URL to use in XML namespace declaration
@@ -93,11 +144,15 @@ public interface ContentPathExportStrategy {
    */
   public String getTableXsdNamespace(String base, int schemaIndex, int tableIndex);
 
+  //-------------------------------------------------------------------------------------------------------------------
+  default String getTableXsdFileName(TableStructure tableStructure) {
+    return getTableXsdFileName(tableStructure.getIndex());
+  };
+
   /**
    * Returns the name of the XML schema file for the specified table
    *
    * @param tableIndex
-   *          table index (begins at 1)
    */
   public String getTableXsdFileName(int tableIndex);
 }

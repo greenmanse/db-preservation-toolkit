@@ -38,8 +38,13 @@ public class SIARD2ExportModule {
 
   public SIARD2ExportModule(Path siardPackage, boolean compressZip, boolean prettyXML, Path tableFilter,
     HashMap<String, String> descriptiveMetadata) {
+    this(siardPackage, compressZip, prettyXML, tableFilter, descriptiveMetadata, new SIARD2ContentPathExportStrategy());
+  }
+
+  public SIARD2ExportModule(Path siardPackage, boolean compressZip, boolean prettyXML, Path tableFilter,
+                            HashMap<String, String> descriptiveMetadata, SIARD2ContentPathExportStrategy contentPathStrategy) {
     this.descriptiveMetadata = descriptiveMetadata;
-    contentPathStrategy = new SIARD2ContentPathExportStrategy();
+    this.contentPathStrategy = contentPathStrategy;
     metadataPathStrategy = new SIARD2MetadataPathStrategy();
     if (compressZip) {
       writeStrategy = new ZipWriteStrategy(ZipWriteStrategy.CompressionMethod.DEFLATE);
@@ -56,8 +61,15 @@ public class SIARD2ExportModule {
 
   public SIARD2ExportModule(Path siardPackage, boolean compressZip, boolean prettyXML, Path tableFilter,
     int externalLobsPerFolder, long externalLobsFolderSize, HashMap<String, String> descriptiveMetadata) {
+    this(siardPackage, compressZip, prettyXML, tableFilter, externalLobsPerFolder, externalLobsFolderSize,
+        descriptiveMetadata, new SIARD2ContentWithExternalLobsPathExportStrategy());
+  }
+
+  public SIARD2ExportModule(Path siardPackage, boolean compressZip, boolean prettyXML, Path tableFilter,
+    int externalLobsPerFolder, long externalLobsFolderSize, HashMap<String, String> descriptiveMetadata,
+                            SIARD2ContentPathExportStrategy contentPathStrategy) {
     this.descriptiveMetadata = descriptiveMetadata;
-    contentPathStrategy = new SIARD2ContentWithExternalLobsPathExportStrategy();
+    this.contentPathStrategy = contentPathStrategy;
     metadataPathStrategy = new SIARD2MetadataPathStrategy();
 
     FolderWriteStrategy folderWriteStrategy = new FolderWriteStrategy();
